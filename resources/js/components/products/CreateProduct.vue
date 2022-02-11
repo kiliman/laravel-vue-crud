@@ -1,9 +1,9 @@
 <template>
     <div>
-        <h3 class="text-center">Edit Product</h3>
+        <h3 class="text-center">Create Product</h3>
         <div class="row">
             <div class="col-md-6">
-                <form @submit.prevent="updateProduct">
+                <form @submit.prevent="addProduct">
                     <div class="form-group">
                         <label>Name</label>
                         <input
@@ -21,7 +21,7 @@
                         />
                     </div>
                     <button type="submit" class="btn btn-primary">
-                        Update
+                        Create
                     </button>
                 </form>
             </div>
@@ -36,23 +36,13 @@ export default {
             product: {},
         };
     },
-    created() {
-        this.axios
-            .get(`http://localhost:8000/api/products/${this.$route.params.id}`)
-            .then((res) => {
-                this.product = res.data;
-            });
-    },
     methods: {
-        updateProduct() {
+        addProduct() {
             this.axios
-                .patch(
-                    `http://localhost:8000/api/products/${this.$route.params.id}`,
-                    this.product
-                )
-                .then((res) => {
-                    this.$router.push({ name: "home" });
-                });
+                .post("/api/products", this.product)
+                .then(() => this.$router.push({ name: "products:list" }))
+                .catch((err) => console.log(err))
+                .finally(() => (this.loading = false));
         },
     },
 };

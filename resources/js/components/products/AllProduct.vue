@@ -20,7 +20,7 @@
                         <div class="btn-group" role="group">
                             <router-link
                                 :to="{
-                                    name: 'edit',
+                                    name: 'products:edit',
                                     params: { id: product.id },
                                 }"
                                 class="btn btn-success"
@@ -48,20 +48,16 @@ export default {
         };
     },
     created() {
-        this.axios
-            .get("http://localhost:8000/api/products/")
-            .then((response) => {
-                this.products = response.data;
-            });
+        this.axios.get("/api/products/").then((response) => {
+            this.products = response.data;
+        });
     },
     methods: {
         deleteProduct(id) {
-            this.axios
-                .delete(`http://localhost:8000/api/products/${id}`)
-                .then((response) => {
-                    let i = this.products.map((data) => data.id).indexOf(id);
-                    this.products.splice(i, 1);
-                });
+            this.axios.delete(`/api/products/${id}`).then(() => {
+                let i = this.products.map((data) => data.id).indexOf(id);
+                this.products.splice(i, 1);
+            });
         },
     },
 };
