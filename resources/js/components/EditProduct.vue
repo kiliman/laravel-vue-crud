@@ -1,42 +1,31 @@
 <template>
     <div>
-        <h2 class="text-center">Products List</h2>
-
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Detail</th>
-                    <!-- <th>Actions</th> -->
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="product in products" :key="product.id">
-                    <td>{{ product.id }}</td>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.detail }}</td>
-                    <td>
-                        <div class="btn-group" role="group">
-                            <router-link
-                                :to="{
-                                    name: 'edit',
-                                    params: { id: product.id },
-                                }"
-                                class="btn btn-success"
-                                >Edit</router-link
-                            >
-                            <button
-                                class="btn btn-danger"
-                                @click="deleteProduct(product.id)"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <h3 class="text-center">Edit Product</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <form @submit.prevent="updateProduct">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            v-model="product.name"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label>Detail</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            v-model="product.detail"
+                        />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Update
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -44,23 +33,25 @@
 export default {
     data() {
         return {
-            products: [],
+            product: {},
         };
     },
     created() {
         this.axios
-            .get("http://localhost:8000/api/products/")
-            .then((response) => {
-                this.products = response.data;
+            .get(`http://localhost:8000/api/products/${this.$route.params.id}`)
+            .then((res) => {
+                this.product = res.data;
             });
     },
     methods: {
-        deleteProduct(id) {
+        updateProduct() {
             this.axios
-                .delete(`http://localhost:8000/api/products/${id}`)
-                .then((response) => {
-                    let i = this.products.map((data) => data.id).indexOf(id);
-                    this.products.splice(i, 1);
+                .patch(
+                    `http://localhost:8000/api/products/${this.$route.params.id}`,
+                    this.product
+                )
+                .then((res) => {
+                    this.$router.push({ name: "home" });
                 });
         },
     },
